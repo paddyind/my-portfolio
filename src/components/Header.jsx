@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { NavLink, Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
-const Header = ({ activeSection }) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
@@ -14,19 +15,31 @@ const Header = ({ activeSection }) => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-      setIsMenuOpen(false)
-    }
-  }
+  const closeMenu = () => setIsMenuOpen(false)
 
   const menuItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'resume', label: 'Resume' },
-    { id: 'contact', label: 'Contact' },
+    { to: '/', label: 'Home' },
+    { to: '/personal', label: 'Personal' },
+    { to: '/academic', label: 'Academic' },
+    { to: '/professional', label: 'Professional' },
+    { to: '/hobbies', label: 'Hobbies' },
+    { to: '/resume', label: 'Resume' },
+    { to: '/contact', label: 'Contact' },
   ]
+
+  const navLinkClasses = ({ isActive }) =>
+    `px-3 py-2 text-sm font-medium transition-colors ${
+      isActive
+        ? 'text-blue-600 border-b-2 border-blue-600'
+        : 'text-gray-700 hover:text-blue-600'
+    }`
+
+  const mobileNavLinkClasses = ({ isActive }) =>
+    `block px-3 py-2 text-base font-medium w-full text-left transition-colors ${
+      isActive
+        ? 'text-blue-600 bg-blue-50'
+        : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
+    }`
 
   return (
     <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -36,29 +49,26 @@ const Header = ({ activeSection }) => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <button
-              onClick={() => scrollToSection('home')}
+            <Link
+              to="/"
+              onClick={closeMenu}
               className="text-xl font-bold text-gray-900 hover:text-blue-600 transition-colors"
             >
               PV
-            </button>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    activeSection === item.id
-                      ? 'text-blue-600 border-b-2 border-blue-600'
-                      : 'text-gray-700 hover:text-blue-600'
-                  }`}
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={navLinkClasses}
                 >
                   {item.label}
-                </button>
+                </NavLink>
               ))}
             </div>
           </div>
@@ -79,17 +89,14 @@ const Header = ({ activeSection }) => {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg">
               {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`block px-3 py-2 text-base font-medium w-full text-left transition-colors ${
-                    activeSection === item.id
-                      ? 'text-blue-600 bg-blue-50'
-                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50'
-                  }`}
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={closeMenu}
+                  className={mobileNavLinkClasses}
                 >
                   {item.label}
-                </button>
+                </NavLink>
               ))}
             </div>
           </div>
