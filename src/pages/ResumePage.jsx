@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Download, ExternalLink, User, Briefcase, GraduationCap, Award, Code } from 'lucide-react'
 
-const Resume = () => {
+const ResumePage = () => {
   const [isEmbedded, setIsEmbedded] = useState(false)
 
   // Sample resume data - replace with your actual information
@@ -241,5 +241,5 @@ const Resume = () => {
   )
 }
 
-export default Resume
+export default ResumePage
 

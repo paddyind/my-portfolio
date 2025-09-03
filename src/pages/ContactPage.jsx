@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink } from 'lucide-react'
 
-const Contact = () => {
+const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -304,5 +304,5 @@ const Contact = () => {
   )
 }
 
-export default Contact
+export default ContactPage
 

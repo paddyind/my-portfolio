@@ -1,63 +1,32 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
 import Header from './components/Header'
-import Hero from './components/Hero'
-import Resume from './components/Resume'
-import Contact from './components/Contact'
 import Footer from './components/Footer'
+import HomePage from './pages/Home'
+import PersonalPage from './pages/Personal'
+import AcademicPage from './pages/Academic'
+import ProfessionalPage from './pages/Professional'
+import HobbiesPage from './pages/Hobbies'
+import ResumePage from './pages/Resume'
+import ContactPage from './pages/Contact'
+import FamilyPage from './pages/Family'
+
 
 function App() {
-  const [activeSection, setActiveSection] = useState('home')
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'resume', 'contact']
-      const currentSection = sections.find(section => {
-        const element = document.getElementById(section)
-        if (element) {
-          const rect = element.getBoundingClientRect()
-          return rect.top <= 100 && rect.bottom >= 100
-        }
-        return false
-      })
-      if (currentSection) {
-        setActiveSection(currentSection)
-      }
-    }
-
-    // Intersection Observer for scroll animations
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible')
-        }
-      })
-    }
-
-    const observer = new IntersectionObserver(observerCallback, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    })
-
-    // Observe all elements with animate-on-scroll class
-    const animatedElements = document.querySelectorAll('.animate-on-scroll')
-    animatedElements.forEach((el) => observer.observe(el))
-
-    window.addEventListener('scroll', handleScroll)
-    handleScroll() // Initial call
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      observer.disconnect()
-    }
-  }, [])
-
   return (
     <div className="App">
-      <Header activeSection={activeSection} />
+      <Header />
       <main>
-        <Hero />
-        <Resume />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/personal" element={<PersonalPage />} />
+          <Route path="/academic" element={<AcademicPage />} />
+          <Route path="/professional" element={<ProfessionalPage />} />
+          <Route path="/hobbies" element={<HobbiesPage />} />
+          <Route path="/resume" element={<ResumePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/family" element={<FamilyPage />} />
+        </Routes>
       </main>
       <Footer />
     </div>
