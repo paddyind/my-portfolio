@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-config
+  namespace: portfolio
+data:
+  NODE_ENV: "production"
+  PORT: "80"
+  # Add any other environment-specific configurations here
+
+

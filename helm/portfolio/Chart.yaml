@@ -1,0 +1,18 @@
+apiVersion: v2
+name: portfolio
+description: A Helm chart for Padmanaban Varatharajan's Personal Portfolio
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+home: https://github.com/padmanaban-varatharajan/portfolio
+sources:
+  - https://github.com/padmanaban-varatharajan/portfolio
+maintainers:
+  - name: Padmanaban Varatharajan
+    email: padmanaban.varatharajan@example.com
+keywords:
+  - portfolio
+  - react
+  - web
+  - frontend
+icon: https://raw.githubusercontent.com/padmanaban-varatharajan/portfolio/main/public/favicon.svg

@@ -1,0 +1,34 @@
+# Development environment values
+replicaCount: 1
+
+image:
+  repository: padmanaban-portfolio
+  tag: "dev"
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+service:
+  type: NodePort
+
+env:
+  NODE_ENV: development
+
+config:
+  NODE_ENV: "development"
+  DEBUG: "true"
+
+autoscaling:
+  enabled: false
+
+podDisruptionBudget:
+  enabled: false
+
+ingress:
+  enabled: false
