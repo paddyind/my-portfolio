@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react'
 import { NavLink, Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
+// It's a good practice to define constants that don't rely on component state
+// outside the component. This prevents them from being recreated on every render.
+const menuItems = [
+  { to: '/', label: 'Home' },
+  { to: '/professional', label: 'Professional' },
+  { to: '/resume', label: 'Resume' },    
+  { to: '/academic', label: 'Academic' },  
+  { to: '/hobbies', label: 'Hobbies' },
+  { to: '/personal', label: 'Personal' },
+  { to: '/family', label: 'Family' },
+  { to: '/contact', label: 'Contact' },
+];
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -16,16 +29,6 @@ const Header = () => {
   }, [])
 
   const closeMenu = () => setIsMenuOpen(false)
-
-  const menuItems = [
-    { to: '/', label: 'Home' },
-    { to: '/personal', label: 'Personal' },
-    { to: '/academic', label: 'Academic' },
-    { to: '/professional', label: 'Professional' },
-    { to: '/hobbies', label: 'Hobbies' },
-    { to: '/resume', label: 'Resume' },
-    { to: '/contact', label: 'Contact' },
-  ]
 
   const navLinkClasses = ({ isActive }) =>
     `px-3 py-2 text-sm font-medium transition-colors ${
@@ -107,4 +110,3 @@ const Header = () => {
 }
 
 export default Header
-

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Heart, Code, Coffee } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -12,7 +13,7 @@ const Footer = () => {
           <div className="col-span-1">
             <h3 className="text-2xl font-bold mb-4">Padmanaban Varatharajan</h3>
             <p className="text-gray-300 mb-4 leading-relaxed">
-              Passionate software developer creating innovative solutions and bringing ideas to life through code.
+              Multi Cloud Architect and AIML/GenAI Enthusiast
             </p>
             <div className="flex items-center space-x-2 text-gray-400">
               <span>Made with</span>
@@ -27,28 +28,28 @@ const Footer = () => {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <button
-                  onClick={() => document.getElementById('home').scrollIntoView({ behavior: 'smooth' })}
+                <Link
+                  to="/"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   Home
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => document.getElementById('resume').scrollIntoView({ behavior: 'smooth' })}
+                <Link
+                  to="/resume"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   Resume
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                <Link
+                  to="/contact"
                   className="text-gray-300 hover:text-white transition-colors"
                 >
                   Contact
-                </button>
+                </Link>
               </li>
               <li>
                 <a
@@ -76,7 +77,7 @@ const Footer = () => {
                 LinkedIn
               </a>
               <a
-                href="https://github.com/padmanaban-varatharajan"
+                href="https://github.com/paddyind"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-gray-300 hover:text-white transition-colors"
