@@ -1,14 +1,111 @@
 import React from 'react';
+import { GraduationCap, Award, ExternalLink } from 'lucide-react';
+
+const education = [
+  {
+    institution: 'College of Engineering, Guindy',
+    degree: 'Master of Engineering - MEng, Biomedical/Medical Engineering',
+  },
+  {
+    institution: 'Great Lakes Institute of Management',
+    degree: 'Post Graduate Program, Artificial Intelligence and Machine Learning',
+    details: 'Grade: 97%',
+    ePortfolio: 'https://eportfolio.greatlearning.in/padmanaban-varatharajan',
+  },
+  {
+    institution: 'Kumaraguru College of Technology',
+    degree: 'Bachelor of Engineering - BE, Electrical, Electronics and Communications Engineering',
+  },
+];
+
+const certifications = [
+  { name: 'CKA: Certified Kubernetes Administrator', issuer: 'The Linux Foundation', date: 'Issued Jul 2023 · Expires Jul 2026' },
+  { name: 'CKAD: Certified Kubernetes Application Developer', issuer: 'The Linux Foundation', date: 'Issued Jul 2023 · Expires Jul 2026' },
+  { name: 'AWS Developer Tools', issuer: 'QA North America', date: 'Issued Aug 2024' },
+  { name: 'Building, Deploying, and Running Containers in Production', issuer: 'QA North America', date: 'Issued Aug 2024' },
+  { name: 'Provision Infrastructure As Code with AWS CloudFormation', issuer: 'QA North America', date: 'Issued Aug 2024' },
+  { name: 'Building Generative AI applications with Amazon Bedrock', issuer: 'QA North America', date: 'Issued Jun 2024' },
+  { name: 'Generative AI Fundamentals of AWS', issuer: 'QA North America', date: 'Issued Jun 2024' },
+  { name: 'Google Cloud Digital Leader Exam Preparation', issuer: 'QA North America', date: 'Issued Sep 2023' },
+  { name: 'Microsoft Certified: Azure AI Fundamentals', issuer: 'Microsoft', date: 'Issued Aug 2021' },
+  { name: 'Microsoft Certified: Azure Data Fundamentals', issuer: 'Microsoft', date: 'Issued Jul 2021' },
+  { name: 'Microsoft Certified: Azure Fundamentals', issuer: 'Microsoft', date: 'Issued Jul 2020' },
+  { name: 'Getting Started with AWS Machine Learning', issuer: 'Coursera', date: 'Issued Jun 2021' },
+  { name: 'Blockchain Basics', issuer: 'LinkedIn', date: 'Issued Sep 2021' },
+  { name: 'Blockchain: Beyond the Basics', issuer: 'LinkedIn', date: 'Issued Sep 2021' },
+  { name: 'Enterprise Architecture Foundations', issuer: 'LinkedIn', date: 'Issued Sep 2021' },
+  { name: 'AWS Certified Machine Learning – Specialty', issuer: 'Amazon Web Services (AWS)', date: 'Issued May 2021 · Expired May 2024', expired: true },
+  { name: 'AWS Certified Solutions Architect – Associate', issuer: 'Amazon Web Services (AWS)', date: 'Issued Jul 2020 · Expired Jul 2023', expired: true },
+  { name: 'Microsoft Certified: Azure AI Engineer Associate', issuer: 'Microsoft', date: 'Issued May 2021 · Expired May 2023', expired: true },
+  { name: 'Microsoft Certified: Azure Data Scientist Associate', issuer: 'Microsoft', date: 'Issued Aug 2021 · Expired Aug 2022', expired: true },
+];
 
 const AcademicPage = () => {
   return (
-    <div className="py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900">Academic</h1>
-        <p className="mt-4 text-lg text-gray-600">
-          Education, certifications, and learning journey will be here.
-        </p>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-extrabold text-gray-900">
+            Academic & Certifications
+          </h1>
+          <p className="mt-4 text-xl text-gray-600">
+            My Educational Background and Professional Credentials
+          </p>
+        </div>
+      </header>
+
+      <main className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Education Section */}
+          <section className="mb-20">
+            <h2 className="text-4xl font-bold text-gray-800 mb-8 flex items-center">
+              <GraduationCap className="w-10 h-10 mr-4 text-indigo-600" />
+              Education
+            </h2>
+            <div className="space-y-8">
+              {education.map((edu, index) => (
+                <div key={index} className="bg-white p-6 rounded-lg shadow-md">
+                  <h3 className="text-2xl font-bold text-gray-900">{edu.institution}</h3>
+                  <p className="text-lg text-indigo-600 font-medium mt-1">{edu.degree}</p>
+                  {edu.details && <p className="text-md text-gray-600 mt-2">{edu.details}</p>}
+                  {edu.ePortfolio && (
+                    <a
+                      href={edu.ePortfolio}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center mt-3 text-indigo-600 hover:text-indigo-800 font-semibold"
+                    >
+                      View ePortfolio <ExternalLink className="w-4 h-4 ml-1.5" />
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Licenses & Certifications Section */}
+          <section>
+            <h2 className="text-4xl font-bold text-gray-800 mb-8 flex items-center">
+              <Award className="w-10 h-10 mr-4 text-indigo-600" />
+              Licenses & Certifications
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {certifications.map((cert, index) => (
+                <div key={index} className={`bg-white p-6 rounded-lg shadow-md ${cert.expired ? 'opacity-60' : ''}`}>
+                  <h3 className="text-xl font-bold text-gray-900">{cert.name}</h3>
+                  <p className="text-md text-gray-600 font-medium mt-2">{cert.issuer}</p>
+                  <p className="text-sm text-gray-500 mt-1">{cert.date}</p>
+                  {cert.expired && (
+                    <span className="inline-block bg-red-100 text-red-800 text-xs font-medium mt-3 px-2.5 py-0.5 rounded-full">
+                      Expired
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
     </div>
   );
 };
