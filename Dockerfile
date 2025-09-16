@@ -1,5 +1,5 @@
 # Multi-stage build for production
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +7,9 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including devDependencies needed for build)
+RUN npm install --legacy-peer-deps && \
+    npm install -g vite@^4.5.14
 
 # Copy source code
 COPY . .
@@ -28,24 +29,25 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Expose port 80
 EXPOSE 80
 
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
 
-# Development stage
-FROM node:18-alpine AS development
+# Simple development stage (for local Docker development)
+FROM node:20-alpine AS development
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install all dependencies
-# RUN npm ci
 RUN npm install --legacy-peer-deps
 
-# Copy source code
-COPY . .
+# Expose port
+EXPOSE 5173
 
-# Start development server
-CMD ["npm", "run", "dev"]
+# Start development server (no volume complications)
+CMD ["sh", "-c", "npm run dev"]
