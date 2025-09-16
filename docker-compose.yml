@@ -1,23 +1,7 @@
 
 
 services:
-  # Development service
-  portfolio-dev:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: development
-    ports:
-      - "8080:5173"
-    volumes:
-      - .:/app
-      - portfolio_node_modules:/app/node_modules
-    environment:
-      - NODE_ENV=development
-    networks:
-      - portfolio-network
-
-  # Production service
+  # Production service - ready for ECS/Cloud Run
   portfolio-prod:
     build:
       context: .
@@ -27,14 +11,18 @@ services:
       - "8081:80"
     environment:
       - NODE_ENV=production
-    networks:
-      - portfolio-network
     profiles:
       - production
 
-networks:
-  portfolio-network:
-    driver: bridge
-
-volumes:
-  portfolio_node_modules:
+  # Development service (simplified - use local `npm run dev` for development)
+  portfolio-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8080:5173"
+    environment:
+      - NODE_ENV=development
+    profiles:
+      - dev
