@@ -3,6 +3,9 @@ import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/Home';
+import AcademicPage from './pages/Academic';
+import ProfessionalPage from './pages/Professional';
+import ContactPage from './pages/ContactPage';
 
 // A placeholder component for pages that are not yet created.
 const PlaceholderPage = ({ title }) => (
@@ -22,11 +25,11 @@ function App() {
           <Route path="/" element={<HomePage />} />
           {/* You can create and import page components for these routes later */}
           <Route path="/personal" element={<PlaceholderPage title="Personal" />} />
-          <Route path="/academic" element={<PlaceholderPage title="Academic" />} />
-          <Route path="/professional" element={<PlaceholderPage title="Professional" />} />
+          <Route path="/academic" element={<AcademicPage />} />
+          <Route path="/professional" element={<ProfessionalPage />} />
           <Route path="/hobbies" element={<PlaceholderPage title="Hobbies" />} />
           <Route path="/resume" element={<PlaceholderPage title="Resume" />} />
-          <Route path="/contact" element={<PlaceholderPage title="Contact" />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/family" element={<PlaceholderPage title="Family" />} />
         </Routes>
       </main>

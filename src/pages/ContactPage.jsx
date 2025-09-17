@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink } from 'lucide-react'
+import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink, MessageSquare } from 'lucide-react'
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ const ContactPage = () => {
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       // For now, create a mailto link as fallback
-      const mailtoLink = `mailto:padmanaban.varatharajan@example.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
+      const mailtoLink = `mailto:padmanaban.varatharajan@gmail.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
         `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
       )}`
       
@@ -48,19 +48,19 @@ const ContactPage = () => {
     {
       icon: Mail,
       label: 'Email',
-      value: 'padmanaban.varatharajan@example.com',
-      href: 'mailto:padmanaban.varatharajan@example.com'
+      value: 'padmanaban.varatharajan@gmail.com',
+      href: 'mailto:padmanaban.varatharajan@gmail.com'
     },
     {
       icon: Phone,
       label: 'Phone',
-      value: '+1 (555) 123-4567',
-      href: 'tel:+15551234567'
+      value: '+91 8237641194',
+      href: 'tel:+918237641194'
     },
     {
       icon: MapPin,
       label: 'Location',
-      value: 'Your City, Country',
+      value: 'Pune, India',
       href: '#'
     }
   ]
@@ -77,6 +77,12 @@ const ContactPage = () => {
       label: 'GitHub',
       href: 'https://github.com/padmanaban-varatharajan',
       color: 'text-gray-800 hover:text-gray-900'
+    },
+    {
+      icon: MessageSquare,
+      label: 'WhatsApp',
+      href: 'https://wa.me/918237641194',
+      color: 'text-green-500 hover:text-green-600'
     },
     {
       icon: Twitter,
