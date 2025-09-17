@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink, MessageSquare } from 'lucide-react'
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink, MessageSquare } from 'lucide-react';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -8,21 +8,21 @@ const ContactPage = () => {
     subject: '',
     message: ''
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitStatus(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
 
     try {
       // Simulate form submission - replace with actual form handling
@@ -33,16 +33,16 @@ const ContactPage = () => {
         `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
       )}`
       
-      window.open(mailtoLink, '_blank')
+      window.open(mailtoLink, '_blank');
       
-      setSubmitStatus('success')
-      setFormData({ name: '', email: '', subject: '', message: '' })
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-      setSubmitStatus('error')
+      setSubmitStatus('error');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const contactInfo = [
     {
@@ -54,8 +54,8 @@ const ContactPage = () => {
     {
       icon: Phone,
       label: 'Phone',
-      value: '+91 8237641194',
-      href: 'tel:+918237641194'
+      value: '+91 8237641193',
+      href: 'tel:+918237641193'
     },
     {
       icon: MapPin,
@@ -63,7 +63,7 @@ const ContactPage = () => {
       value: 'Pune, India',
       href: '#'
     }
-  ]
+  ];
 
   const socialLinks = [
     {
@@ -81,7 +81,7 @@ const ContactPage = () => {
     {
       icon: MessageSquare,
       label: 'WhatsApp',
-      href: 'https://wa.me/918237641194',
+      href: 'https://wa.me/918237641193',
       color: 'text-green-500 hover:text-green-600'
     },
     {
@@ -90,28 +90,27 @@ const ContactPage = () => {
       href: 'https://twitter.com/your-handle',
       color: 'text-blue-400 hover:text-blue-500'
     }
-  ]
+  ];
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-16 animate-on-scroll">
-          <div className="flex items-center justify-center space-x-2 text-blue-600 mb-4">
-            <Mail size={24} />
-            <span className="text-sm font-medium uppercase tracking-wide">Get In Touch</span>
-          </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Let's Work Together
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            I'm always open to discussing new opportunities, interesting projects, or just having a chat about technology.
+    <div className="bg-gray-50 min-h-screen">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-5xl font-extrabold text-gray-900">
+            Get In Touch
+          </h1>
+          <p className="mt-4 text-xl text-gray-600">
+            Let's Work Together on Your Next Project
           </p>
         </div>
+      </header>
+
+      <main className="py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="space-y-8 animate-on-scroll">
+          <div className="space-y-8">
             <div>
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
               <div className="space-y-4">
@@ -192,7 +191,7 @@ const ContactPage = () => {
           </div>
 
           {/* Contact Form */}
-          <div className="animate-on-scroll">
+          <div>
             <div className="bg-white rounded-lg shadow-lg p-8">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Send me a message</h3>
               
@@ -305,10 +304,11 @@ const ContactPage = () => {
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        </div>
+      </main>
+    </div>
   )
-}
+};
 
-export default ContactPage
+export default ContactPage;
 
