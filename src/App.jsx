@@ -6,6 +6,9 @@ import HomePage from './pages/Home';
 import AcademicPage from './pages/Academic';
 import ProfessionalPage from './pages/Professional';
 import ContactPage from './pages/ContactPage';
+import LearningsPage from './pages/LearningsPage';
+import InterviewsPage from './pages/InterviewsPage';
+import PreparationPage from './pages/PreparationPage';
 
 // A placeholder component for pages that are not yet created.
 const PlaceholderPage = ({ title }) => (
@@ -31,6 +34,9 @@ function App() {
           <Route path="/resume" element={<PlaceholderPage title="Resume" />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/family" element={<PlaceholderPage title="Family" />} />
+          <Route path="/learnings" element={<LearningsPage />} />
+          <Route path="/interviews" element={<InterviewsPage />} />
+          <Route path="/preparation" element={<PreparationPage />} />
         </Routes>
       </main>
       <Footer />

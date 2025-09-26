@@ -7,8 +7,11 @@ import { Menu, X } from 'lucide-react'
 const menuItems = [
   { to: '/', label: 'Home' },
   { to: '/professional', label: 'Professional' },
-  { to: '/resume', label: 'Resume' },    
-  { to: '/academic', label: 'Academic' },  
+  { to: '/learnings', label: 'My Learnings' },
+  { to: '/interviews', label: 'My Interviews' },
+  { to: '/preparation', label: 'My Preparation' },
+  { to: '/resume', label: 'Resume' },
+  { to: '/academic', label: 'Academic' },
   { to: '/hobbies', label: 'Hobbies' },
   { to: '/personal', label: 'Personal' },
   { to: '/family', label: 'Family' },
