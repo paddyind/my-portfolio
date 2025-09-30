@@ -12,11 +12,12 @@ const QuestionList = ({ questions }) => {
             <li key={index} className="mb-6 pb-4 border-b last:border-b-0">
               <p className="text-lg font-semibold">{q.question}</p>
               <div className="mt-2">
-                {q.tags.map((tag, i) => (
-                  <span key={i} className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                    #{tag}
-                  </span>
-                ))}
+                <span className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-blue-700 mr-2 mb-2">
+                  {q.category}
+                </span>
+                <span className="inline-block bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-700 mr-2 mb-2">
+                  {q.difficulty}
+                </span>
               </div>
               <p className="mt-2 text-gray-600 bg-gray-50 p-3 rounded-md">{q.answer}</p>
             </li>
