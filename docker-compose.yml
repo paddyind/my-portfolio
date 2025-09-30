@@ -1,31 +1,97 @@
 version: '3.8'
 
 services:
-  # Production portfolio service
-  portfolio:
+  portfolio-frontend:
     build:
       context: .
-      dockerfile: Dockerfile
-      target: production
+      dockerfile: docker/Dockerfile.frontend
       args:
-        # Proxy settings auto-detected from environment
         HTTP_PROXY: ${HTTP_PROXY:-}
         HTTPS_PROXY: ${HTTPS_PROXY:-}
-        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local}
+        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local,portfolio-server}
+    container_name: portfolio-frontend
     ports:
       - "8080:8080"
     environment:
       - NODE_ENV=production
-    restart: unless-stopped
+      - VITE_API_BASE_URL=http://localhost:3001
+      - VITE_LLM_ENABLED=${LLM_ENABLED:-false}
+    networks:
+      - portfolio-network
+    depends_on:
+      - portfolio-server
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 30s
+    restart: unless-stopped
+
+  portfolio-server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+      args:
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
+        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local}
+    container_name: portfolio-server
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - LLM_ENABLED=${LLM_ENABLED:-false}
+      - LLM_MODEL=${LLM_MODEL:-llama2}
+      - OLLAMA_HOST=${OLLAMA_HOST:-host.docker.internal:11434}
+    volumes:
+      - portfolio-data:/app/data
     networks:
       - portfolio-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  # Optional Ollama service for local LLM (disabled by default)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: portfolio-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - portfolio-network
+    profiles:
+      - llm  # Only start when 'llm' profile is activated
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 networks:
   portfolio-network:
     driver: bridge
+
+volumes:
+  portfolio-data:
+    driver: local
+  ollama-data:
+    driver: local

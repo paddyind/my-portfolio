@@ -1,0 +1,47 @@
+# Simple Backend Dockerfile - Pure JavaScript, no native dependencies
+FROM node:20-alpine
+
+# Build arguments for corporate proxy support
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+
+# Set proxy environment variables
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV NO_PROXY=${NO_PROXY}
+
+WORKDIR /app
+
+# Configure npm proxy if needed
+RUN if [ -n "$HTTP_PROXY" ]; then \
+        npm config set proxy "$HTTP_PROXY" && \
+        npm config set https-proxy "$HTTPS_PROXY" && \
+        npm config set registry https://registry.npmjs.org/ && \
+        npm config set fetch-timeout 300000; \
+    fi
+
+# Copy server package files
+COPY server/package*.json ./
+
+# Install dependencies (pure JavaScript only)
+RUN npm install --only=production || npm install
+
+# Copy server source code
+COPY server/ ./
+
+# Create data directory and non-root user
+RUN mkdir -p /app/data && \
+    addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3001/ || exit 1
+
+EXPOSE 3001
+
+CMD ["npm", "start"]

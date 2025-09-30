@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Menu, X, ChevronDown } from 'lucide-react';
+import LLMToggle from './LLMToggle';
 
 const menuItems = [
   { to: '/', label: 'Home' },
@@ -69,8 +70,9 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+          <div className="hidden md:flex md:items-center md:space-x-6">
+            <LLMToggle />
+            <div className="ml-6 flex items-baseline space-x-8">
               {menuItems.map((item) =>
                 item.submenu ? (
                   <div

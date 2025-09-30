@@ -1,0 +1,66 @@
+# Frontend Dockerfile - React with Vite
+FROM node:20-alpine AS builder
+
+# Build arguments for corporate proxy support
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+
+# Set proxy environment variables
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV NO_PROXY=${NO_PROXY}
+
+WORKDIR /app
+
+# Configure npm proxy if needed
+RUN if [ -n "$HTTP_PROXY" ]; then \
+        npm config set proxy "$HTTP_PROXY" && \
+        npm config set https-proxy "$HTTPS_PROXY" && \
+        npm config set registry https://registry.npmjs.org/ && \
+        npm config set fetch-timeout 300000; \
+    fi
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code (excluding server)
+COPY . ./
+RUN rm -rf server/
+
+# Build the application
+RUN npm run build
+
+# Production stage with Nginx
+FROM nginx:alpine
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy built application
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Add health check endpoint
+RUN echo "healthy" > /usr/share/nginx/html/health
+
+# Security: create non-root user
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup && \
+    chown -R appuser:appgroup /var/cache/nginx && \
+    chown -R appuser:appgroup /var/log/nginx && \
+    chown -R appuser:appgroup /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown -R appuser:appgroup /var/run/nginx.pid
+
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

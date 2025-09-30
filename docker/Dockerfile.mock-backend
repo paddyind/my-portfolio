@@ -1,0 +1,93 @@
+# Simple Mock Backend for Testing
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Create a simple mock server without database dependencies
+RUN cat > server.js << 'EOF'
+import express from 'express';
+import cors from 'cors';
+
+const app = express();
+const port = 3001;
+
+app.use(cors());
+app.use(express.json());
+
+// Mock data
+const mockData = {
+  learnings: [
+    { id: 1, topic: 'React Hooks', category: 'Frontend', status: 'Completed', notes: 'Mock data for testing' },
+    { id: 2, topic: 'Docker Deployment', category: 'DevOps', status: 'In Progress', notes: 'Learning containerization' }
+  ],
+  interviews: [
+    { id: 1, question: 'What is React?', answer: 'A JavaScript library for building user interfaces', difficulty: 'Easy', category: 'React' },
+    { id: 2, question: 'Explain Docker containers', answer: 'Lightweight, portable software packages', difficulty: 'Medium', category: 'DevOps' }
+  ],
+  preparation_scenarios: [
+    { id: 1, scenario: 'You need to design a scalable web application...', topic: 'System Design' },
+    { id: 2, scenario: 'Handle a production incident with database issues...', topic: 'Troubleshooting' }
+  ]
+};
+
+// Health check
+app.get('/', (req, res) => {
+  res.json({ status: 'Mock Backend Server Running!', timestamp: new Date() });
+});
+
+// API endpoints
+app.get('/api/learnings', (req, res) => {
+  res.json(mockData.learnings);
+});
+
+app.get('/api/interviews', (req, res) => {
+  res.json(mockData.interviews);
+});
+
+app.get('/api/preparation-scenarios', (req, res) => {
+  res.json(mockData.preparation_scenarios);
+});
+
+app.post('/api/learnings', (req, res) => {
+  const newLearning = { id: Date.now(), ...req.body };
+  mockData.learnings.push(newLearning);
+  res.status(201).json(newLearning);
+});
+
+app.post('/api/interviews', (req, res) => {
+  const newInterview = { id: Date.now(), ...req.body };
+  mockData.interviews.push(newInterview);
+  res.status(201).json(newInterview);
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Mock Backend Server listening on port ${port}`);
+});
+EOF
+
+# Create package.json with minimal dependencies
+RUN cat > package.json << 'EOF'
+{
+  "name": "mock-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  }
+}
+EOF
+
+# Install only essential dependencies
+RUN npm install
+
+EXPOSE 3001
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:3001/ || exit 1
+
+CMD ["npm", "start"]
