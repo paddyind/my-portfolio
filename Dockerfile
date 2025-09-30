@@ -1,53 +1,20 @@
-# Multi-stage build for production
-FROM node:20-alpine AS builder
+# Simple Production Dockerfile - Uses pre-built assets
+# Build locally first: npm run build
+FROM nginx:alpine
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install all dependencies (including devDependencies needed for build)
-RUN npm install --legacy-peer-deps && \
-    npm install -g vite@^4.5.14
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Production stage
-FROM nginx:alpine AS production
-
-# Copy custom nginx config
+# Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Copy built application from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy pre-built application (run 'npm run build' first)
+COPY dist /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Add health check endpoint
+RUN echo "healthy" > /usr/share/nginx/html/health
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:80/ || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
-# Start nginx
+EXPOSE 8080
+
 CMD ["nginx", "-g", "daemon off;"]
-
-# Simple development stage (for local Docker development)
-FROM node:20-alpine AS development
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
-
-# Expose port
-EXPOSE 5173
-
-# Start development server (no volume complications)
-CMD ["sh", "-c", "npm run dev"]

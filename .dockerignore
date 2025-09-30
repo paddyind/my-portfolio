@@ -1,8 +1,41 @@
-node_modules
-dist
+# Keep it minimal - only exclude what we don't need
+
+# Node modules (not needed since we use pre-built dist/)
+node_modules/
+
+# Git and version control
+.git/
+.gitignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
 .DS_Store
-.env
-.env.*
-npm-debug.log*
-Dockerfile
-.git
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Development files not needed in production
+src/
+public/
+package*.json
+postcss.config.js
+tailwind.config.js
+vite.config.js
+
+# Documentation
+README.md
+*.md
+
+# Kubernetes and scripts
+k8s/
+helm/
+scripts/
