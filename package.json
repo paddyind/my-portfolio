@@ -4,7 +4,9 @@
   "description": "Personal portfolio website for Padmanaban Varatharajan",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 5173",
+    "dev:frontend": "vite --host 0.0.0.0 --port 5173",
+    "dev:backend": "yarn --cwd server dev",
+    "dev": "concurrently \"npm:dev:frontend\" \"npm:dev:backend\"",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -20,6 +22,7 @@
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.6",
     "vite": "^4.5.14"
