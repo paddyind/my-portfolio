@@ -1,9 +1,7 @@
-import { learnings } from '../mocks/learnings';
-
-export const getLearnings = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(learnings);
-    }, 500);
-  });
+export const getLearnings = async () => {
+  const response = await fetch('/api/learnings');
+  if (!response.ok) {
+    throw new Error('Failed to fetch learnings');
+  }
+  return response.json();
 };

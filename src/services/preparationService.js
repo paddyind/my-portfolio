@@ -1,17 +1,17 @@
-import { preparationScenarios, generateNewScenario as mockGenerateNewScenario } from '../mocks/preparation';
-
-export const getPreparationScenarios = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(preparationScenarios);
-    }, 500);
-  });
+export const getPreparationScenarios = async () => {
+  const response = await fetch('/api/preparation-scenarios');
+  if (!response.ok) {
+    throw new Error('Failed to fetch preparation scenarios');
+  }
+  return response.json();
 };
 
-export const generateNewScenario = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockGenerateNewScenario());
-    }, 1000);
+export const generateNewScenario = async () => {
+  const response = await fetch('/api/preparation-scenarios/generate', {
+    method: 'POST',
   });
+  if (!response.ok) {
+    throw new Error('Failed to generate new scenario');
+  }
+  return response.json();
 };

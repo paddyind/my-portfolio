@@ -5,16 +5,29 @@ import QuestionList from '../components/QuestionList';
 const InterviewsPage = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getInterviews().then((data) => {
-      setQuestions(data);
-      setLoading(false);
-    });
+    const fetchInterviews = async () => {
+      try {
+        const data = await getInterviews();
+        setQuestions(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInterviews();
   }, []);
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error: {error}</div>;
   }
 
   return (
