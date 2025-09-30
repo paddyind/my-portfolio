@@ -5,16 +5,29 @@ import KnowledgeCard from '../components/KnowledgeCard';
 const LearningsPage = () => {
   const [learnings, setLearnings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getLearnings().then((data) => {
-      setLearnings(data);
-      setLoading(false);
-    });
+    const fetchLearnings = async () => {
+      try {
+        const data = await getLearnings();
+        setLearnings(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLearnings();
   }, []);
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error: {error}</div>;
   }
 
   return (

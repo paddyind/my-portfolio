@@ -5,16 +5,29 @@ import ScenarioGenerator from '../components/ScenarioGenerator';
 const PreparationPage = () => {
   const [scenarios, setScenarios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getPreparationScenarios().then((data) => {
-      setScenarios(data);
-      setLoading(false);
-    });
+    const fetchScenarios = async () => {
+      try {
+        const data = await getPreparationScenarios();
+        setScenarios(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchScenarios();
   }, []);
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-10 text-red-500">Error: {error}</div>;
   }
 
   return (

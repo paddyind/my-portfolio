@@ -1,9 +1,7 @@
-import { interviews } from '../mocks/interviews';
-
-export const getInterviews = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(interviews);
-    }, 500);
-  });
+export const getInterviews = async () => {
+  const response = await fetch('/api/interviews');
+  if (!response.ok) {
+    throw new Error('Failed to fetch interviews');
+  }
+  return response.json();
 };
