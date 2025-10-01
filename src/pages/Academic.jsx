@@ -56,54 +56,56 @@ const AcademicPage = () => {
 
       <main className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Education Section */}
-          <section className="mb-20">
-            <h2 className="text-4xl font-bold text-gray-800 mb-8 flex items-center">
-              <GraduationCap className="w-10 h-10 mr-4 text-indigo-600" />
-              Education
-            </h2>
-            <div className="space-y-8">
-              {education.map((edu, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-2xl font-bold text-gray-900">{edu.institution}</h3>
-                  <p className="text-lg text-indigo-600 font-medium mt-1">{edu.degree}</p>
-                  {edu.details && <p className="text-md text-gray-600 mt-2">{edu.details}</p>}
-                  {edu.ePortfolio && (
-                    <a
-                      href={edu.ePortfolio}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center mt-3 text-indigo-600 hover:text-indigo-800 font-semibold"
-                    >
-                      View ePortfolio <ExternalLink className="w-4 h-4 ml-1.5" />
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+          <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
+            {/* Education Section - 30% (3 columns) */}
+            <section className="lg:col-span-3">
+              <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <GraduationCap className="w-8 h-8 mr-3 text-indigo-600" />
+                Education
+              </h2>
+              <div className="space-y-6">
+                {education.map((edu, index) => (
+                  <div key={index} className="bg-white p-5 rounded-lg shadow-md">
+                    <h3 className="text-lg font-bold text-gray-900">{edu.institution}</h3>
+                    <p className="text-sm text-indigo-600 font-medium mt-1">{edu.degree}</p>
+                    {edu.details && <p className="text-sm text-gray-600 mt-2">{edu.details}</p>}
+                    {edu.ePortfolio && (
+                      <a
+                        href={edu.ePortfolio}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center mt-2 text-indigo-600 hover:text-indigo-800 font-semibold text-sm"
+                      >
+                        View ePortfolio <ExternalLink className="w-3 h-3 ml-1" />
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
 
-          {/* Licenses & Certifications Section */}
-          <section>
-            <h2 className="text-4xl font-bold text-gray-800 mb-8 flex items-center">
-              <Award className="w-10 h-10 mr-4 text-indigo-600" />
-              Licenses & Certifications
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {certifications.map((cert, index) => (
-                <div key={index} className={`bg-white p-6 rounded-lg shadow-md ${cert.expired ? 'opacity-60' : ''}`}>
-                  <h3 className="text-xl font-bold text-gray-900">{cert.name}</h3>
-                  <p className="text-md text-gray-600 font-medium mt-2">{cert.issuer}</p>
-                  <p className="text-sm text-gray-500 mt-1">{cert.date}</p>
-                  {cert.expired && (
-                    <span className="inline-block bg-red-100 text-red-800 text-xs font-medium mt-3 px-2.5 py-0.5 rounded-full">
-                      Expired
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
+            {/* Licenses & Certifications Section - 70% (7 columns) */}
+            <section className="lg:col-span-7">
+              <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <Award className="w-8 h-8 mr-3 text-indigo-600" />
+                Licenses & Certifications
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {certifications.map((cert, index) => (
+                  <div key={index} className={`bg-white p-5 rounded-lg shadow-md ${cert.expired ? 'opacity-60' : ''}`}>
+                    <h3 className="text-lg font-bold text-gray-900">{cert.name}</h3>
+                    <p className="text-sm text-gray-600 font-medium mt-2">{cert.issuer}</p>
+                    <p className="text-xs text-gray-500 mt-1">{cert.date}</p>
+                    {cert.expired && (
+                      <span className="inline-block bg-red-100 text-red-800 text-xs font-medium mt-2 px-2 py-0.5 rounded-full">
+                        Expired
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
       </main>
     </div>
