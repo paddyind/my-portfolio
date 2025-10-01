@@ -13,7 +13,7 @@ docker-compose up --build
 # Development with hot reload
 docker-compose --profile dev up --build portfolio-dev
 
-# Corporate environment (with Amdocs proxy)
+# Corporate environment (with proxy)
 docker-compose --profile corporate up --build portfolio-corporate
 ```
 
@@ -29,6 +29,13 @@ docker run -p 8080:8080 padmanaban-portfolio:latest
 docker run -p 5173:5173 padmanaban-portfolio:dev
 
 # Build and run corporate (with proxy)
+# Option 1: Use corporate.env file (recommended)
+# Create corporate.env with your proxy settings, then:
+./scripts/docker-build.sh corporate
+
+# Option 2: Set environment variables directly
+export HTTP_PROXY=http://your-proxy:port
+export HTTPS_PROXY=http://your-proxy:port
 ./scripts/docker-build.sh corporate
 docker run -p 8080:8080 padmanaban-portfolio:corporate
 ```
@@ -40,11 +47,11 @@ docker run -p 8080:8080 padmanaban-portfolio:corporate
 - **Usage**: Personal networks, cloud environments
 - **Command**: `docker-compose up`
 
-### 2. Corporate Environment (Amdocs Proxy)
-- **Proxy**: genproxy.amdocs.com:8080
+### 2. Corporate Environment (Proxy)
+- **Proxy**: Set via HTTP_PROXY and HTTPS_PROXY environment variables
 - **Port**: 8080
 - **Usage**: Corporate networks behind proxy
-- **Command**: `docker-compose --profile corporate up`
+- **Command**: `HTTP_PROXY=http://your-proxy:port docker-compose --profile corporate up`
 
 ### 3. Development Environment
 - **Port**: 5173
@@ -135,10 +142,10 @@ docker run -p 8080:8080 your-username/portfolio:latest
 Set these environment variables to customize deployment:
 
 ```bash
-# Proxy settings (optional)
-export HTTP_PROXY=http://genproxy.amdocs.com:8080
-export HTTPS_PROXY=http://genproxy.amdocs.com:8080
-export NO_PROXY=localhost,127.0.0.1,.local
+# Proxy settings (optional - set these for corporate environments)
+# export HTTP_PROXY=http://your-proxy:port
+# export HTTPS_PROXY=http://your-proxy:port
+# export NO_PROXY=localhost,127.0.0.1,.local
 
 # Port customization
 export PORT=8080        # Production port
@@ -147,6 +154,19 @@ export DEV_PORT=5173    # Development port
 # Environment
 export NODE_ENV=production
 ```
+
+### Corporate Environment File
+
+For corporate environments, create a `corporate.env` file in the project root:
+
+```bash
+# corporate.env
+HTTP_PROXY=http://your-corporate-proxy:port
+HTTPS_PROXY=http://your-corporate-proxy:port
+NO_PROXY=localhost,127.0.0.1,.local,.yourdomain.com
+```
+
+**Important**: The `corporate.env` file is automatically ignored by git to prevent exposing sensitive corporate settings.
 
 ## Health Checks
 
@@ -170,8 +190,8 @@ kill -9 <PID>
 
 ### Proxy Issues
 ```bash
-# Test proxy connectivity
-curl -x genproxy.amdocs.com:8080 http://www.google.com
+# Test proxy connectivity (replace with your proxy)
+curl -x $HTTP_PROXY http://www.google.com
 
 # Check Docker proxy settings
 docker info | grep -i proxy

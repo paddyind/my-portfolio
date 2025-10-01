@@ -12,7 +12,7 @@ ENV HTTPS_PROXY=${HTTPS_PROXY}
 ENV NO_PROXY=${NO_PROXY}
 
 # Install system dependencies for potential future native modules
-RUN apk add --no-cache python3 make g++
+# RUN apk add --no-cache python3 make gcc g++ musl-dev
 
 WORKDIR /app
 

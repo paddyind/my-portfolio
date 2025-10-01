@@ -133,3 +133,4 @@ loadDatabase();
 console.log(`📊 Database ready: ${database.learnings.length} learnings, ${database.interviews.length} interviews, ${database.preparation_scenarios.length} scenarios`);
 
 export default dbInterface;
+

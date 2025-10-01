@@ -89,4 +89,18 @@ temp/
 # Local development files
 .local
 
+# Corporate environment files (contain sensitive proxy settings)
+corporate.env
+.env.corporate
+*.corporate
+corporate-*.env
 
+# Proxy configuration files
+proxy.env
+.env.proxy
+
+# Corporate setup documentation (optional to ignore)
+# CORPORATE_SETUP.md
+
+
+corporate.env.backup
