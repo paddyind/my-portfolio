@@ -54,7 +54,6 @@ CORPORATE_PROXY_ENABLED=true
 ## Migration from Hardcoded Settings
 
 If you previously had hardcoded corporate settings in the codebase:
-1. All hardcoded `amdocs.com` references have been removed
-2. All hardcoded proxy URLs have been replaced with environment variables
-3. Create `corporate.env` with your specific settings
-4. The application will work the same way but with better security
+1. All hardcoded proxy URLs have been replaced with environment variables
+2. Create `corporate.env` with your specific settings
+3. The application will work the same way but with better security
