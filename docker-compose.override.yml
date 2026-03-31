@@ -7,13 +7,18 @@ services:
       dockerfile: docker/Dockerfile
     container_name: portfolio-frontend
     ports:
-      - "8080:8080"
+      - "${PORTFOLIO_HOST_FRONTEND_PORT:-3400}:8080"
     environment:
       - NODE_ENV=production
-      - VITE_API_BASE_URL=http://localhost:3001
+      - VITE_API_BASE_URL=http://localhost:${PORTFOLIO_HOST_SERVER_PORT:-3401}
       - VITE_LLM_ENABLED=false
+      - OTEL_SERVICE_NAME=portfolio-frontend
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_RESOURCE_ATTRIBUTES=tenant.id=local-dev,service.namespace=my-portfolio
     networks:
       - portfolio-network
+      - obs-net
     depends_on:
       - portfolio-server
     healthcheck:

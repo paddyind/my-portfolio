@@ -23,7 +23,10 @@ docker run -d -p 8080:8080 --name portfolio-app portfolio:latest
 
 ## 🌐 Access Your Portfolio
 
-- **Main Application**: http://localhost:8080
+- **Docker Compose** (multi-service stack): frontend **`http://localhost:3400`**, API server **`http://localhost:3401`** — see `.env.example` and `observability-platform/docs/ARCHITECTURE.md`.
+- **Single-container `docker run`** (legacy one-liner in this section): map whatever host port you choose, e.g. `http://localhost:8080`.
+
+- **Main Application** (single-container example): http://localhost:8080
 - **Health Check**: http://localhost:8080/health
 
 ## 📁 Project Structure
