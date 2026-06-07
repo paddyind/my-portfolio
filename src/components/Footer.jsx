@@ -85,7 +85,7 @@ const Footer = () => {
                 GitHub
               </a>
               <a
-                href="mailto:padmanaban.varatharajan@example.com"
+                href="mailto:padmanaban.varatharajan@gmail.com"
                 className="block text-gray-300 hover:text-white transition-colors"
               >
                 Email

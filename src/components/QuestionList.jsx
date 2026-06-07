@@ -2,7 +2,7 @@ import React from 'react';
 
 const QuestionList = ({ questions }) => {
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 mt-8">
+    <div className="bg-white shadow-md rounded-lg p-6">
       <h2 className="text-2xl font-bold mb-4">Interview Questions</h2>
       {questions.length === 0 ? (
         <p>No questions submitted yet.</p>

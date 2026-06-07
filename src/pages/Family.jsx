@@ -29,7 +29,7 @@ const FamilyPage = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="py-20 bg-gray-50 flex items-center justify-center">
+      <div className="page-shell py-20 flex items-center justify-center">
         <div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-lg">
           <div className="text-center mb-6">
             <Lock size={48} className="mx-auto text-gray-400" />
@@ -68,14 +68,25 @@ const FamilyPage = () => {
   }
 
   return (
-    <div className="py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold text-gray-900">Family & Memories</h1>
-        <p className="mt-4 text-lg text-gray-600">
-          Welcome, family! This is a private space for our stories, milestones, and shared moments.
-        </p>
-        {/* Add your private content here */}
-      </div>
+    <div className="page-shell">
+      <header className="page-hero">
+        <div className="page-hero-inner">
+          <h1 className="page-hero-title">Family & Memories</h1>
+          <p className="page-hero-subtitle">
+            A private space for our stories, milestones, and shared moments
+          </p>
+        </div>
+      </header>
+
+      <main className="page-main">
+        <div className="page-content">
+          <div className="bg-white p-8 rounded-lg shadow-md max-w-3xl">
+            <p className="text-lg text-gray-700 leading-relaxed">
+              Welcome, family! Private content for photos, milestones, and memories will be added here.
+            </p>
+          </div>
+        </div>
+      </main>
     </div>
   );
 };

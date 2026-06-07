@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Linkedin, Github, Twitter, ExternalLink, MessageSquare } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Linkedin, Github, ExternalLink, MessageSquare } from 'lucide-react';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -75,7 +75,7 @@ const ContactPage = () => {
     {
       icon: Github,
       label: 'GitHub',
-      href: 'https://github.com/padmanaban-varatharajan',
+      href: 'https://github.com/paddyind',
       color: 'text-gray-800 hover:text-gray-900'
     },
     {
@@ -83,12 +83,6 @@ const ContactPage = () => {
       label: 'WhatsApp',
       href: 'https://wa.me/918237641193',
       color: 'text-green-500 hover:text-green-600'
-    },
-    {
-      icon: Twitter,
-      label: 'Twitter',
-      href: 'https://twitter.com/your-handle',
-      color: 'text-blue-400 hover:text-blue-500'
     }
   ];
 

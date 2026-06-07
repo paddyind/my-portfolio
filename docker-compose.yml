@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   portfolio-frontend:
     build:
@@ -8,23 +6,17 @@ services:
       args:
         HTTP_PROXY: ${HTTP_PROXY:-}
         HTTPS_PROXY: ${HTTPS_PROXY:-}
-        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local,portfolio-server}
+        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local,portfolio-server,ollama}
     container_name: portfolio-frontend
     ports:
       - "${PORTFOLIO_HOST_FRONTEND_PORT:-3400}:8080"
     environment:
       - NODE_ENV=production
-      - VITE_API_BASE_URL=http://localhost:${PORTFOLIO_HOST_SERVER_PORT:-3401}
-      - VITE_LLM_ENABLED=${LLM_ENABLED:-false}
-      - OTEL_SERVICE_NAME=portfolio-frontend
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-      - OTEL_RESOURCE_ATTRIBUTES=tenant.id=local-dev,service.namespace=my-portfolio
     networks:
       - portfolio-network
-      - obs-net
     depends_on:
-      - portfolio-server
+      portfolio-server:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
       interval: 30s
@@ -40,25 +32,23 @@ services:
       args:
         HTTP_PROXY: ${HTTP_PROXY:-}
         HTTPS_PROXY: ${HTTPS_PROXY:-}
-        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local}
+        NO_PROXY: ${NO_PROXY:-localhost,127.0.0.1,.local,ollama}
     container_name: portfolio-server
     ports:
       - "${PORTFOLIO_HOST_SERVER_PORT:-3401}:3001"
     environment:
       - NODE_ENV=production
       - PORT=3001
+      - DATA_DIR=/app/data
       - LLM_ENABLED=${LLM_ENABLED:-false}
-      - LLM_MODEL=${LLM_MODEL:-llama2}
-      - OLLAMA_HOST=${OLLAMA_HOST:-host.docker.internal:11434}
-      - OTEL_SERVICE_NAME=portfolio-server
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
-      - OTEL_RESOURCE_ATTRIBUTES=tenant.id=local-dev,service.namespace=my-portfolio
+      - LLM_MODEL=${LLM_MODEL:-gemma2:2b}
+      # With --profile llm: Ollama runs in compose → use service name.
+      # Without profile: point at host Ollama (Docker Desktop) on port 3420 or 11434.
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://ollama:11434}
     volumes:
       - portfolio-data:/app/data
     networks:
       - portfolio-network
-      - obs-net
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
       interval: 30s
@@ -67,7 +57,7 @@ services:
       start_period: 30s
     restart: unless-stopped
 
-  # Optional Ollama service for local LLM (disabled by default)
+  # Private local LLM — start with: docker compose --profile llm up -d
   ollama:
     image: ollama/ollama:latest
     container_name: portfolio-ollama
@@ -77,32 +67,22 @@ services:
       - ollama-data:/root/.ollama
     networks:
       - portfolio-network
-      - obs-net
     profiles:
-      - llm  # Only start when 'llm' profile is activated
+      - llm
     restart: unless-stopped
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
     environment:
-      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_KEEP_ALIVE=${OLLAMA_KEEP_ALIVE:-30m}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/health"]
+      test: ["CMD", "ollama", "list"]
       interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
 
 networks:
   portfolio-network:
     driver: bridge
-  obs-net:
-    external: true
-    name: obs_net
 
 volumes:
   portfolio-data:

@@ -1,7 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import db from './database.js';
-import ollama from 'ollama';
+import {
+  getLlmStatus,
+  isLlmEnabled,
+  brainstormTopic,
+  expandLearning,
+  generateScenario,
+} from './llm.js';
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -16,8 +22,28 @@ app.get('/', (req, res) => {
 // API routes
 // Learnings
 app.get('/api/learnings', async (req, res) => {
-  const learnings = await db.all('SELECT * FROM learnings');
+  let learnings = db.getLearnings({ includePrivate: true });
+  const { category, priority, source } = req.query;
+  if (category) {
+    learnings = learnings.filter((item) => item.category === category);
+  }
+  if (priority) {
+    learnings = learnings.filter((item) => item.priority === priority);
+  }
+  if (source) {
+    learnings = learnings.filter((item) => item.source === source);
+  }
   res.json(learnings);
+});
+
+app.get('/api/learnings/categories', (req, res) => {
+  res.json(db.getCategories());
+});
+
+app.get('/api/learnings/:id', (req, res) => {
+  const learning = db.getLearningById(req.params.id);
+  if (!learning) return res.status(404).json({ error: 'Learning not found' });
+  res.json(learning);
 });
 
 // Interviews
@@ -34,9 +60,37 @@ app.get('/api/preparation-scenarios', async (req, res) => {
 
 // POST routes for creating new items
 app.post('/api/learnings', async (req, res) => {
-  const { topic, category, status, notes } = req.body;
-  const result = await db.run('INSERT INTO learnings (topic, category, status, notes) VALUES (?, ?, ?, ?)', topic, category, status, notes);
-  res.status(201).json({ id: result.lastID });
+  const created = db.createLearning(req.body);
+  res.status(201).json(created);
+});
+
+app.patch('/api/learnings/:id', (req, res) => {
+  const updated = db.patchLearning(req.params.id, req.body);
+  if (!updated) return res.status(404).json({ error: 'Learning not found' });
+  res.json(updated);
+});
+
+app.post('/api/learnings/:id/key-points', (req, res) => {
+  const learning = db.getLearningById(req.params.id);
+  if (!learning) return res.status(404).json({ error: 'Learning not found' });
+  const { point } = req.body;
+  if (!point?.trim()) return res.status(400).json({ error: 'Point is required' });
+  const key_points = [...(learning.key_points || [])];
+  if (!key_points.includes(point.trim())) key_points.push(point.trim());
+  const updated = db.patchLearning(req.params.id, { key_points });
+  res.json(updated);
+});
+
+app.post('/api/learnings/:id/resources', (req, res) => {
+  const learning = db.getLearningById(req.params.id);
+  if (!learning) return res.status(404).json({ error: 'Learning not found' });
+  const { title, url, type = 'article' } = req.body;
+  if (!title?.trim() || !url?.trim()) {
+    return res.status(400).json({ error: 'Title and URL are required' });
+  }
+  const resources = [...(learning.resources || []), { title: title.trim(), url: url.trim(), type }];
+  const updated = db.patchLearning(req.params.id, { resources });
+  res.json(updated);
 });
 
 app.post('/api/interviews', async (req, res) => {
@@ -45,36 +99,109 @@ app.post('/api/interviews', async (req, res) => {
   res.status(201).json({ id: result.lastID });
 });
 
-// LLM Configuration endpoint
-app.get('/api/llm/status', (req, res) => {
-  res.json({ 
-    enabled: process.env.LLM_ENABLED === 'true' || false,
-    model: process.env.LLM_MODEL || 'llama2',
-    features: ['scenario-generation', 'interview-prep', 'learning-suggestions']
+// LLM — private Ollama (Gemma, Llama, etc.)
+app.get('/api/llm/status', async (req, res) => {
+  try {
+    const status = await getLlmStatus();
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ enabled: false, connected: false, error: error.message });
+  }
+});
+
+app.post('/api/llm/brainstorm', async (req, res) => {
+  const { topic, category, context, useAI = false } = req.body;
+  if (!topic?.trim()) {
+    return res.status(400).json({ error: 'Topic is required' });
+  }
+
+  if (useAI && isLlmEnabled()) {
+    try {
+      const result = await brainstormTopic({ topic, category, context });
+      return res.json({ ...result, generated_by: 'AI' });
+    } catch (error) {
+      console.error('AI brainstorm failed:', error.message);
+      return res.status(503).json({ error: 'AI unavailable', detail: error.message });
+    }
+  }
+
+  return res.status(400).json({
+    error: 'AI mode is off or LLM_ENABLED is false',
+    hint: 'Enable AI mode in the UI and set LLM_ENABLED=true with Ollama running',
   });
+});
+
+app.post('/api/llm/expand-learning', async (req, res) => {
+  const { learning_id, useAI = false } = req.body;
+  const learning = db.getLearningById(learning_id);
+  if (!learning) return res.status(404).json({ error: 'Learning not found' });
+
+  if (useAI && isLlmEnabled()) {
+    try {
+      const result = await expandLearning(learning);
+      return res.json({ ...result, generated_by: 'AI', learning_id });
+    } catch (error) {
+      console.error('AI expand failed:', error.message);
+      return res.status(503).json({ error: 'AI unavailable', detail: error.message });
+    }
+  }
+
+  return res.status(400).json({ error: 'AI mode is off or LLM_ENABLED is false' });
+});
+
+app.post('/api/llm/apply-brainstorm', async (req, res) => {
+  const { learning_id, summary, key_points, deep_dive, talking_points, merge = true } = req.body;
+
+  if (learning_id) {
+    const learning = db.getLearningById(learning_id);
+    if (!learning) return res.status(404).json({ error: 'Learning not found' });
+
+    const updates = {};
+    if (summary) updates.summary = summary;
+    if (deep_dive) {
+      updates.deep_dive = merge && learning.deep_dive
+        ? `${learning.deep_dive}\n\n---\n\n${deep_dive}`
+        : deep_dive;
+    }
+    if (talking_points) {
+      updates.notes = merge && learning.notes
+        ? `${learning.notes}\n\n${talking_points}`
+        : talking_points;
+    }
+    if (key_points?.length) {
+      const existing = learning.key_points || [];
+      updates.key_points = merge
+        ? [...existing, ...key_points.filter((p) => !existing.includes(p))]
+        : key_points;
+    }
+    const updated = db.patchLearning(learning_id, updates);
+    return res.json(updated);
+  }
+
+  const created = db.createLearning({
+    topic: req.body.topic,
+    category: req.body.category || 'Enterprise Architecture',
+    summary: summary || '',
+    key_points: key_points || [],
+    deep_dive: deep_dive || '',
+    notes: talking_points || '',
+    is_private: true,
+    status: 'Personal',
+  });
+  return res.status(201).json(created);
 });
 
 // Endpoint for generating new scenarios with AI (when enabled) or fallback
 app.post('/api/preparation-scenarios/generate', async (req, res) => {
   try {
     const { topic, useAI = false } = req.body;
-    const llmEnabled = process.env.LLM_ENABLED === 'true';
-    
-    if (useAI && llmEnabled) {
-      try {
-        const prompt = `Generate a detailed technical interview scenario for ${topic || 'system design'}. 
-Format: A realistic workplace challenge that requires strategic thinking, technical knowledge, and problem-solving.
-Include specific requirements, constraints, and expected deliverables.
-Keep it concise but comprehensive (2-3 sentences).`;
-        
-        const response = await ollama.chat({
-          model: process.env.LLM_MODEL || 'llama2',
-          messages: [{ role: 'user', content: prompt }],
-        });
 
+    if (useAI && isLlmEnabled()) {
+      try {
+        const scenarioText = await generateScenario(topic);
         const newScenario = {
-          scenario: response.message.content,
-          topic: topic || 'AI Generated'
+          scenario: scenarioText,
+          topic: topic || 'AI Generated',
         };
 
         const result = await db.run('INSERT INTO preparation_scenarios (scenario, topic) VALUES (?, ?)', newScenario.scenario, newScenario.topic);
@@ -83,7 +210,6 @@ Keep it concise but comprehensive (2-3 sentences).`;
         return;
       } catch (aiError) {
         console.log('AI generation failed, falling back to curated scenarios:', aiError.message);
-        // Fall through to curated scenarios
       }
     }
     
@@ -120,9 +246,9 @@ Keep it concise but comprehensive (2-3 sentences).`;
 
 // PUT routes for updating items
 app.put('/api/learnings/:id', async (req, res) => {
-  const { topic, category, status, notes } = req.body;
-  await db.run('UPDATE learnings SET topic = ?, category = ?, status = ?, notes = ? WHERE id = ?', topic, category, status, notes, req.params.id);
-  res.status(200).json({ message: 'Learning updated successfully' });
+  const updated = db.patchLearning(req.params.id, req.body);
+  if (!updated) return res.status(404).json({ error: 'Learning not found' });
+  res.json(updated);
 });
 
 app.put('/api/interviews/:id', async (req, res) => {
@@ -140,6 +266,49 @@ app.delete('/api/learnings/:id', async (req, res) => {
 app.delete('/api/interviews/:id', async (req, res) => {
   await db.run('DELETE FROM interviews WHERE id = ?', req.params.id);
   res.status(200).json({ message: 'Interview deleted successfully' });
+});
+
+// Quiz / Knowledge Check
+app.get('/api/quiz/categories', (req, res) => {
+  res.json(db.getCategories());
+});
+
+app.get('/api/quiz/questions', (req, res) => {
+  const categories = req.query.categories ? req.query.categories.split(',').filter(Boolean) : [];
+  const type = req.query.type || null;
+  const limit = Math.min(parseInt(req.query.limit, 10) || 20, 50);
+  const source = req.query.source || 'mixed';
+  const questions = db.filterQuizQuestions({ categories, type, limit, source });
+  res.json(questions);
+});
+
+app.post('/api/quiz/questions', (req, res) => {
+  const { question, answer, category, type, options, learning_id } = req.body;
+  if (!question?.trim() || !answer?.trim() || !category) {
+    return res.status(400).json({ error: 'Question, answer, and category are required' });
+  }
+  const created = db.createQuizQuestion(req.body);
+  res.status(201).json(created);
+});
+
+app.get('/api/quiz/attempts', async (req, res) => {
+  const attempts = await db.all('SELECT * FROM quiz_attempts');
+  res.json(attempts);
+});
+
+app.post('/api/quiz/attempts', async (req, res) => {
+  const { mode, categories, score, total, duration_seconds, details } = req.body;
+  const result = await db.run(
+    'INSERT INTO quiz_attempts (mode, categories, score, total, duration_seconds, details) VALUES (?, ?, ?, ?, ?, ?)',
+    mode,
+    categories,
+    score,
+    total,
+    duration_seconds,
+    JSON.stringify(details || {})
+  );
+  const created = await db.get('SELECT * FROM quiz_attempts WHERE id = ?', result.lastID);
+  res.status(201).json(created);
 });
 
 app.listen(port, () => {

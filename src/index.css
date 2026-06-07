@@ -30,3 +30,33 @@ body {
   transform: translateY(0);
 }
 
+@layer components {
+  .page-shell {
+    @apply bg-gray-50 min-h-screen;
+  }
+
+  .page-hero {
+    @apply bg-white shadow-sm;
+  }
+
+  .page-hero-inner {
+    @apply max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center;
+  }
+
+  .page-hero-title {
+    @apply text-5xl font-extrabold text-gray-900;
+  }
+
+  .page-hero-subtitle {
+    @apply mt-4 text-xl text-gray-600;
+  }
+
+  .page-main {
+    @apply py-16;
+  }
+
+  .page-content {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+

@@ -1,50 +1,39 @@
 #!/bin/bash
+set -euo pipefail
 
-echo "🚀 Portfolio Deployment Script"
-echo "=============================="
+echo "Portfolio Docker Compose Deployment"
+echo "===================================="
 
-# Stop and remove existing container if running
-echo "🛑 Stopping existing container..."
-docker stop portfolio-app 2>/dev/null || true
-docker rm portfolio-app 2>/dev/null || true
+cd "$(dirname "$0")"
 
-# Build the application locally
-echo "🏗️ Building application locally..."
-npm run build
+FRONTEND_PORT="${PORTFOLIO_HOST_FRONTEND_PORT:-3400}"
+SERVER_PORT="${PORTFOLIO_HOST_SERVER_PORT:-3401}"
 
-# Build Docker image
-echo "🐳 Building Docker image..."
-docker build -t portfolio:latest .
+echo "Building and starting containers..."
+docker compose up --build -d
 
-# Run the container
-echo "🚀 Starting container..."
-docker run -d -p 8080:8080 --name portfolio-app portfolio:latest
-
-# Wait for container to start
-echo "⏳ Waiting for container to start..."
-sleep 5
-
-# Check status
-echo "📊 Container status:"
-docker ps | grep portfolio
+echo "Waiting for services to become healthy..."
+sleep 8
 
 echo ""
-echo "🏥 Health check:"
-curl -s http://localhost:8080/health
+echo "Container status:"
+docker compose ps
 
 echo ""
+echo "Health checks:"
+curl -sf "http://localhost:${FRONTEND_PORT}/health" && echo "  frontend: healthy" || echo "  frontend: not ready yet"
+curl -sf "http://localhost:${SERVER_PORT}/" >/dev/null && echo "  server:   healthy" || echo "  server:   not ready yet"
+
 echo ""
-echo "✅ Portfolio deployed successfully!"
+echo "Portfolio deployed successfully!"
 echo ""
-echo "🌐 Access your portfolio at:"
-echo "   http://localhost:8080"
+echo "  Frontend:  http://localhost:${FRONTEND_PORT}"
+echo "  API:       http://localhost:${SERVER_PORT}"
+echo "  API proxy: http://localhost:${FRONTEND_PORT}/api/ (via nginx)"
 echo ""
-echo "🏥 Health check:"
-echo "   http://localhost:8080/health"
-echo ""
-echo "🛑 To stop:"
-echo "   docker stop portfolio-app"
-echo ""
-echo "📊 To check logs:"
-echo "   docker logs portfolio-app"
-echo ""
+echo "Useful commands:"
+echo "  docker compose logs -f"
+echo "  docker compose down"
+echo "  docker compose --profile llm up -d   # start Ollama container"
+echo "  ./scripts/ollama-setup.sh medium     # pull Gemma/Llama models"
+echo "  # Set LLM_ENABLED=true in .env, then: docker compose up -d portfolio-server"

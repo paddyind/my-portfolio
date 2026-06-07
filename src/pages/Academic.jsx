@@ -1,7 +1,7 @@
 import React from 'react';
 import { GraduationCap, Award, ExternalLink } from 'lucide-react';
 
-const education = [
+export const education = [
   {
     institution: 'College of Engineering, Guindy',
     degree: 'Master of Engineering - MEng, Biomedical/Medical Engineering',
@@ -18,7 +18,7 @@ const education = [
   },
 ];
 
-const certifications = [
+export const certifications = [
   { name: 'CKA: Certified Kubernetes Administrator', issuer: 'The Linux Foundation', date: 'Issued Jul 2023 · Expires Jul 2026' },
   { name: 'CKAD: Certified Kubernetes Application Developer', issuer: 'The Linux Foundation', date: 'Issued Jul 2023 · Expires Jul 2026' },
   { name: 'AWS Developer Tools', issuer: 'QA North America', date: 'Issued Aug 2024' },

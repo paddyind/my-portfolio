@@ -1,12 +1,12 @@
 import React from 'react';
 import { Briefcase, Zap, Award } from 'lucide-react';
 
-const aboutMe = {
+export const aboutMe = {
   title: 'About Me',
   description: `A seasoned Senior Software, Solutions Architect, and Director with over 19 years of experience in the telecommunications industry. Proven expertise in building and leading technical, functional, and development teams for end-to-end delivery of digital transformation and cloud migration projects. Holds multiple certifications in Kubernetes, AWS (Solutions Architect Associate, Machine Learning Specialty), and Microsoft Azure (Fundamentals, AI, Data Fundamentals, Associate level), and is a Google Cloud Digital Leader. Skilled in UI/UX, microservices, TMF ODA, Open API, SOA, and backend services for large-scale web and mobile applications. Possesses strong customer-facing, solution design, and architecture experience in multi-channel digital solutions for telecom BSS. Certified in PGP-AIML with hands-on experience in machine/deep learning models. Holds a Master's in Medical Electronics from College of Engineering, Guindy, and a Bachelor's in Electronics and Communication from Kumaraguru College of Technology.`,
 };
 
-const experiences = [
+export const experiences = [
   {
     company: 'Amdocs',
     role: 'Senior Software Architect',
@@ -85,7 +85,7 @@ const experiences = [
   },
 ];
 
-const skills = {
+export const skills = {
   'Cloud & DevOps': ['AWS', 'Azure', 'Google Cloud', 'Kubernetes', 'Docker', 'Terraform', 'CI/CD', 'DevOps'],
   'Backend & Architecture': ['Microservices', 'SOA', 'REST', 'SOAP', 'Spring Boot', 'Java/J2EE', 'Python', 'Node.js', 'PostgreSQL', 'Apache Kafka'],
   'Frontend & UI/UX': ['AngularJS', 'React', 'HTML', 'CSS', 'JavaScript', 'UI/UX Design'],

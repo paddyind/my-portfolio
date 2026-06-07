@@ -23,10 +23,7 @@ Thumbs.db
 # Environment files
 .env*
 
-# Development files not needed in production  
-# Note: Keep package*.json for Docker builds
-postcss.config.js
-tailwind.config.js
+# Note: Keep package*.json, vite.config.js, tailwind, and postcss for Docker frontend builds
 
 # Documentation
 README.md
